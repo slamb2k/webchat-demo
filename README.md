@@ -26,9 +26,10 @@ This is a **real `botframework-webchat` instance** connected to a mock DirectLin
 
 | File | Purpose |
 |------|---------|
+| `src/main.tsx` | React entry point — renders `App` inside `StrictMode` |
 | `src/App.tsx` | Main UI with control panel, card type selector, and middleware toggles |
 | `src/MockDirectLine.ts` | Mock DirectLine transport that simulates a Copilot Studio bot |
-| `src/middlewares.ts` | Diagnostic and fix store middlewares |
+| `src/middlewares.ts` | Three middleware factories: diagnostic store middleware, diagnostic card action middleware, and the Action.Execute → Action.Submit fix |
 
 ## Getting Started
 
@@ -42,11 +43,15 @@ Open the URL shown in your terminal (usually `http://localhost:5173`).
 ## Walkthrough
 
 1. Open browser **DevTools > Console** — all activity is logged there
-2. With the default settings (**Action.Execute**, no middleware), click "Yes, Allow" on the consent card — **nothing happens**
-3. Toggle **Action.Submit** — click the card — **it works immediately**
-4. Switch back to **Action.Execute** and enable the **Execute Fix** toggle — click the card — **it works** (the middleware converted Execute to Submit before rendering)
-5. Enable **Diagnostics** to see the full activity flow in the console
-6. Type `reset` in the chat to resend the consent card at any time
+2. Leave all middlewares **OFF**
+3. Click **"Yes, Allow"** on the consent card
+4. With **Action.Execute** selected: **nothing happens** — the click is silently dropped (broken!)
+5. Switch to **Action.Submit**: **it works immediately** — this is Microsoft's recommended approach for WebChat
+6. Switch back to **Action.Execute** and enable the **Fix** toggle — card buttons are converted to `Action.Submit` before rendering, so clicks work
+7. Enable **Diagnostics** to see the full activity flow in the console
+8. Type `reset` in the chat to resend the consent card at any time
+
+Changing any toggle or card type restarts the WebChat instance with a fresh connection — this ensures each configuration is tested in isolation.
 
 ## Why Not Action.Submit Everywhere?
 
@@ -76,6 +81,6 @@ The WebChat component and store middleware are the same either way — the Agent
 
 ## Tech Stack
 
-- React 18 + TypeScript
+- React 18 + TypeScript 5
 - [botframework-webchat](https://www.npmjs.com/package/botframework-webchat) 4.17
-- Vite
+- Vite 5
